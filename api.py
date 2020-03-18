@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from database_connector import getUserId, appendData, makeUser
+from database_connector import getUserId, appendData, makeUser, getFullDump
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ def submit():
         userid = request.args.get['id']
         data = request.args.get('d1')
     appendData(userid,[data])
-    return "successfully inserted"
+    return str(getFullDump())
 
 @app.route('/')
 def index():
