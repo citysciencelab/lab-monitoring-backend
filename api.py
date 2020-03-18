@@ -24,6 +24,7 @@ def submit():
         userid = request.args.get['id']
         data = request.args.get('d1')
     appendData(userid,[data])
+    return "successfully inserted"
 
 @app.route('/')
 def index():
