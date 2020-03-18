@@ -9,13 +9,21 @@ def login():
         username = request.form['nm']
     else:
         username = request.args.get('nm')
-    print(username)
-    # appendData(user,["testa","testb"])
     try:
         userid = str(getUserId(username))
     except ValueError:
         userid = makeUser(username)
     return str(userid)
+
+@app.route('/submit', methods = ['POST', 'GET'])
+def submit():
+    if request.method == 'POST':
+        userid = request.form['id']
+        data = request.form['d1']
+    else:
+        userid = request.args.get['id']
+        data = request.args.get('d1')
+    appendData(userid,[data])
 
 @app.route('/')
 def index():

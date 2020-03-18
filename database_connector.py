@@ -52,11 +52,10 @@ def appendData(userid, data):
     numLines = None
     with open(file, 'r') as csvfile:
         lines = csv.reader(csvfile, delimiter=',')
-        numLines = len(list(lines))
+        numLines = len(list(lines)) # get the current number of entries for use as an id
 
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        newEntry = [numLines, getTimeStamp(), userid]+data
-        print(newEntry)
+        newEntry = [numLines, getTimeStamp(), userid]+data 
         csvwriter.writerow(newEntry)
