@@ -1,17 +1,21 @@
 from flask import Flask, request, render_template
-from database_connector import getUserId, appendData
+from database_connector import getUserId, appendData, makeUser
 
 app = Flask(__name__)
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        user = request.form['nm']
+        username = request.form['nm']
     else:
-        user = request.args.get('nm')
-    print(user)
+        username = request.args.get('nm')
+    print(username)
     # appendData(user,["testa","testb"])
-    return "hello " + user + " your id is " + str(getUserId(user))
+    try:
+        userid = str(getUserId(username))
+    except ValueError:
+        userid = makeUser(username)
+    return str(userid)
 
 @app.route('/')
 def index():
