@@ -15,15 +15,18 @@ def login():
         userid = makeUser(username)
     return str(userid)
 
-@app.route('/submit', methods = ['POST', 'GET'])
+@app.route('/submit', methods = ['POST'])
 def submit():
     if request.method == 'POST':
         userid = request.form['id']
-        data = request.form['d1']
-    else:
-        userid = request.args.get['id']
-        data = request.args.get('d1')
-    appendData(userid,[data])
+        data = []
+        for field in request.form:
+            if field == 'id':
+                userid = request.form[field]
+            else:
+                data.append(request.form[field])
+            # print("feld:"+field)
+    appendData(userid,data)
     return str(getFullDump())
 
 @app.route('/')
