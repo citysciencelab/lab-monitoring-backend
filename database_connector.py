@@ -17,7 +17,7 @@ def makeUser(username):
     file = "users_db.csv"
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='\'', quoting=csv.QUOTE_MINIMAL) # use ' as quotechar, since json string representation uses "
 
         userid = generateID()
         while(checkUser(userid)): # id already exists (what a chance!)
@@ -30,7 +30,7 @@ def makeUser(username):
 
 def readCSVbyKey(file, key):
     with open(file, 'r') as csvfile:
-        lines = csv.reader(csvfile, delimiter=',', quotechar='"')
+        lines = csv.reader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
         for row in lines:
             if key in row:
                 return row
@@ -56,7 +56,7 @@ def appendData(userid, data):
 
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='\'', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='\'', quoting=csv.QUOTE_MINIMAL) # use ' as quotechar, since json string representation uses "
         newEntry = [numLines, getTimeStamp(), userid, json.dumps(data) ]
         csvwriter.writerow(newEntry)
 
@@ -64,7 +64,7 @@ def getFullDump():
     file = "data_db.csv"
     output = ""
     with open(file, 'r') as csvfile:
-        lines = csv.reader(csvfile, delimiter=',', quotechar='\'')
+        lines = csv.reader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
         for line in lines:
             output += str(line) + "\n"
     return output

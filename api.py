@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS
 from database_connector import getUserId, appendData, makeUser, getFullDump
 
@@ -15,7 +15,7 @@ def login():
         userid = str(getUserId(username))
     except ValueError:
         userid = makeUser(username)
-    return str(userid)
+    return jsonify(userid)
 
 @app.route('/submit', methods = ['POST'])
 def submit():
@@ -26,7 +26,7 @@ def submit():
         data = dict(request.json)
         del data["id"]
         appendData(userid,data)
-    return str(getFullDump())
+    return jsonify(getFullDump())
 
 @app.route('/')
 def index():

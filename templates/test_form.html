@@ -1,6 +1,6 @@
 <html>
    <body>
-      <form action = "http://localhost:5000/submit" method = "post">
+      <form method = "post" name="myForm">
          <p><input type = "text" name = "id" value = "01b07"/></p>
          <p>Enter data:</p>
          <p><input type = "text" name = "d1" /></p>
@@ -10,7 +10,30 @@
          <p><input type = "text" name = "d3" /></p>
          <p>Enter data:</p>
          <p><input type = "text" name = "d4" /></p>
-         <p><input type = "submit" value = "submit" /></p>
       </form>
+      <p><input type = "button" value = "submit" onclick="onSubmit()"/></p>
+      <script>
+         function onSubmit() {
+            var data = objectifyForm(document.forms[0]);
+            fetch('http://localhost:5000/submit', {
+               method: 'POST',
+               mode: 'cors',
+               headers: {
+                  'Content-Type': 'application/json'
+               },
+               body: JSON.stringify(data)
+            }).then(function(res) {
+               console.log(res);
+            })
+         }
+
+         function objectifyForm(formArray) {//serialize data function
+            var returnArray = {};
+            for (var i = 0; i < formArray.length; i++){
+               returnArray[formArray[i]['name']] = formArray[i]['value'];
+            }
+            return returnArray;
+         }
+      </script>
    </body>
 </html>
