@@ -56,7 +56,7 @@ def appendData(userid, data):
 
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='\'', quoting=csv.QUOTE_MINIMAL)
         newEntry = [numLines, getTimeStamp(), userid, json.dumps(data) ]
         csvwriter.writerow(newEntry)
 
@@ -64,7 +64,7 @@ def getFullDump():
     file = "data_db.csv"
     output = ""
     with open(file, 'r') as csvfile:
-        lines = csv.reader(csvfile, delimiter=',', quotechar='"')
+        lines = csv.reader(csvfile, delimiter=',', quotechar='\'')
         for line in lines:
             output += str(line) + "\n"
     return output
