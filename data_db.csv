@@ -3,3 +3,5 @@ db_entry,timestamp,userid,data
 2,2020-03-20 13:18:19.623667,01b07,'{"d1": "yds", "d2": "syf", "d3": "ysf", "d4": "sef"}'
 3,2020-03-20 13:18:39.096008,01b07,'{"d1": "sfa", "d2": "SG", "d3": "syg", "d4": "seg"}'
 4,2020-03-20 13:18:46.859032,01b07,'{"d1": "sfa", "d2": "SG", "d3": "syg", "d4": ""}'
+5,2020-03-20 14:54:18.238448,01b078,'{"d1": "", "d2": "", "d3": "", "d4": ""}'
+6,2020-03-20 15:02:05.993976,01b07,'{"plzHome": "22222", "gender": "", "mood": 3, "moodTag": "", "videoApp": null, "maxCallSize": 0, "avgCallSize": 0, "screenHours": 0, "peopleMetRealWorld": 0, "peopleMetOnline": 0}'

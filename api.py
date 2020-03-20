@@ -1,16 +1,16 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, abort
 from flask_cors import CORS
-from database_connector import getUserId, appendData, makeUser, getFullDumpJSON
+from database_connector import getUserId, appendData, makeUser, getFullDumpJSON, checkUser
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/login', methods = ['POST', 'GET'])
+@app.route('/login', methods = ['POST'])
 def login():
     if request.method == 'POST':
-        username = request.json['id']
-    else:
-        username = request.args.get('id')
+        username = request.json['username']
+    if username == "":
+        abort(400)
     try:
         userid = str(getUserId(username))
     except ValueError:
@@ -21,8 +21,10 @@ def login():
 def submit():
     if request.method == 'POST':
         if not "id" in request.json:
-            raise ValueError("no user id supplied!")
+            abort(401)
         userid = request.json['id']
+        if not checkUser(userid):
+            abort(401)
         data = dict(request.json)
         del data["id"]
         appendData(userid,data)
