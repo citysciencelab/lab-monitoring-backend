@@ -1,6 +1,6 @@
 import csv
 import random
-
+import json
 
 def getUserId(username):
     dbentry = readCSVbyKey("users_db.csv", username)
@@ -57,7 +57,7 @@ def appendData(userid, data):
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        newEntry = [numLines, getTimeStamp(), userid]+data 
+        newEntry = [numLines, getTimeStamp(), userid, json.dumps(data) ]
         csvwriter.writerow(newEntry)
 
 def getFullDump():

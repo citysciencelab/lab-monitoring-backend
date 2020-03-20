@@ -18,15 +18,12 @@ def login():
 @app.route('/submit', methods = ['POST'])
 def submit():
     if request.method == 'POST':
+        if not "id" in request.form:
+            raise ValueError("no user id supplied!")
         userid = request.form['id']
-        data = []
-        for field in request.form:
-            if field == 'id':
-                userid = request.form[field]
-            else:
-                data.append(request.form[field])
-            # print("feld:"+field)
-    appendData(userid,data)
+        data = dict(request.form)
+        del data["id"]
+        appendData(userid,data)
     return str(getFullDump())
 
 @app.route('/')
