@@ -20,10 +20,10 @@ def login():
 @app.route('/submit', methods = ['POST'])
 def submit():
     if request.method == 'POST':
-        if not "id" in request.form:
+        if not "id" in request.json:
             raise ValueError("no user id supplied!")
-        userid = request.form['id']
-        data = dict(request.form)
+        userid = request.json['id']
+        data = dict(request.json)
         del data["id"]
         appendData(userid,data)
     return str(getFullDump())
