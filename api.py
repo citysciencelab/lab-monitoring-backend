@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from flask_cors import CORS
-from database_connector import getUserId, appendData, makeUser
+from database_connector import getUserId, appendData, makeUser, getFullDump
 
 app = Flask(__name__)
 CORS(app)
@@ -8,28 +8,29 @@ CORS(app)
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        username = request.form['nm']
+        username = request.json['id']
     else:
-        username = request.args.get('nm')
+        username = request.args.get('id')
     try:
         userid = str(getUserId(username))
     except ValueError:
         userid = makeUser(username)
     return str(userid)
 
-@app.route('/submit', methods = ['POST', 'GET'])
+@app.route('/submit', methods = ['POST'])
 def submit():
     if request.method == 'POST':
-        userid = request.json['id']
-        data = request.json
-    else:
-        userid = request.args.get['id']
-        data = request.args.get('d1')
-    appendData(userid,[data])
+        if not "id" in request.form:
+            raise ValueError("no user id supplied!")
+        userid = request.form['id']
+        data = dict(request.form)
+        del data["id"]
+        appendData(userid,data)
+    return str(getFullDump())
 
 @app.route('/')
 def index():
-    return render_template('test_form.html')
+    return render_template('./test_form.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
