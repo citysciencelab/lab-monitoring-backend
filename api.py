@@ -1,7 +1,9 @@
 from flask import Flask, request, render_template
+from flask_cors import CORS
 from database_connector import getUserId, appendData, makeUser
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
@@ -18,8 +20,8 @@ def login():
 @app.route('/submit', methods = ['POST', 'GET'])
 def submit():
     if request.method == 'POST':
-        userid = request.form['id']
-        data = request.form['d1']
+        userid = request.json['id']
+        data = request.json
     else:
         userid = request.args.get['id']
         data = request.args.get('d1')
