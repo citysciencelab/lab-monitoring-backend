@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from flask_cors import CORS
-from database_connector import getUserId, appendData, makeUser, getFullDump
+from database_connector import getUserId, appendData, makeUser, getFullDumpJSON
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +26,7 @@ def submit():
         data = dict(request.json)
         del data["id"]
         appendData(userid,data)
-    return jsonify(getFullDump())
+    return jsonify(getFullDumpJSON())
 
 @app.route('/')
 def index():

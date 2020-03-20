@@ -60,11 +60,21 @@ def appendData(userid, data):
         newEntry = [numLines, getTimeStamp(), userid, json.dumps(data) ]
         csvwriter.writerow(newEntry)
 
-def getFullDump():
+def getFullDumpStr():
     file = "data_db.csv"
     output = ""
     with open(file, 'r') as csvfile:
-        lines = csv.reader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
-        for line in lines:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
+        for line in reader:
             output += str(line) + "\n"
+    return output
+
+def getFullDumpJSON():
+    file = "data_db.csv"
+    output = []
+    with open(file, 'r') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
+        for line in reader:
+            output.append(dict(line))
+    print(output)
     return output

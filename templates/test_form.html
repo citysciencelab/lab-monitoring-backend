@@ -12,6 +12,7 @@
          <p><input type = "text" name = "d4" /></p>
       </form>
       <p><input type = "button" value = "submit" onclick="onSubmit()"/></p>
+      <div id = "responsediv">Response</div>
       <script>
          function onSubmit() {
             var data = objectifyForm(document.forms[0]);
@@ -24,7 +25,12 @@
                body: JSON.stringify(data)
             }).then(function(res) {
                console.log(res);
-            })
+               return res.json();
+            }).then( function(str) {   
+                  var myDiv = document.getElementById("responsediv");
+                  myDiv.innerHTML = JSON.stringify(str) ;
+               }
+            )
          }
 
          function objectifyForm(formArray) {//serialize data function
