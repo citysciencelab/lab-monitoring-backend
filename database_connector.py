@@ -19,7 +19,7 @@ def generateID():
     print("hash value: %032x" % hash)
     return hash
 
-def makeUser(username, userdata = {}):
+def makeUser(username, userdata = None):
     file = "users_db.csv"
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
