@@ -1,6 +1,8 @@
+import datetime
 from flask import Flask, request, render_template, jsonify, abort
 from flask_cors import CORS, cross_origin
 from database_connector import getUserId, getUserData, appendData, makeUser, getFullDumpJSON, checkUser
+import analysis
 
 app = Flask(__name__)
 CORS(app)
@@ -42,6 +44,15 @@ def submit():
 @app.route('/')
 def index():
     return render_template('./test_form.html')
+
+@app.route('/rawdata', methods = ['POST','GET'])
+def rawdata():
+    if request.method == 'POST':
+        day = request.json['day']
+    if request.method == "GET":
+        day = request.args.get("day")
+    day = datetime.datetime.fromisoformat(day)
+    return jsonify(analysis.getAllEntriesOfDay(day))
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

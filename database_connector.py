@@ -1,6 +1,7 @@
 import csv
 import random
 import json
+import datetime
 
 def getUserId(username):
     dbentry = readCSVbyKey("users_db.csv", username)
@@ -33,7 +34,6 @@ def makeUser(username, userdata = None):
         csvwriter.writerow(newEntry)
     return userid
 
-
 def readCSVbyKey(file, key):
     with open(file, 'r') as csvfile:
         lines = csv.reader(csvfile, delimiter=',', quotechar='\'') # use ' as quotechar, since json string representation uses "
@@ -47,8 +47,6 @@ def checkUser(userid):
     if not dbentry or len(dbentry) < 2:
         return False
     return dbentry[1] == userid
-
-import datetime
 
 def getTimeStamp():
     return datetime.datetime.today()
