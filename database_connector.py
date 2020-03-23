@@ -8,6 +8,12 @@ def getUserId(username):
         raise ValueError("this user was not found!")
     return dbentry[1]
 
+def getUserData(username):
+    dbentry = readCSVbyKey("users_db.csv", username)
+    if not dbentry or len(dbentry) < 3:
+        raise ValueError("this user was not found or has no data!")
+    return dbentry[2]
+
 def generateID():
     hash = random.getrandbits(128)
     print("hash value: %032x" % hash)

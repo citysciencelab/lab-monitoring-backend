@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify, abort
 from flask_cors import CORS, cross_origin
-from database_connector import getUserId, appendData, makeUser, getFullDumpJSON, checkUser
+from database_connector import getUserId, getUserData, appendData, makeUser, getFullDumpJSON, checkUser
 
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +19,11 @@ def login():
         userdata = dict(request.json)
         del userdata["username"]
         userid = str(makeUser(username, userdata))
-    return jsonify({"id":userid})
+    response = {
+            "id":userid,
+            "userdata": getUserData(username)
+        }
+    return jsonify(response)
 
 @cross_origin()
 @app.route('/submit', methods = ['POST'])
