@@ -1,10 +1,11 @@
 from flask import Flask, request, render_template, jsonify, abort
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from database_connector import getUserId, appendData, makeUser, getFullDumpJSON, checkUser
 
 app = Flask(__name__)
 CORS(app)
 
+@cross_origin()
 @app.route('/login', methods = ['POST'])
 def login():
     if request.method == 'POST':
@@ -17,6 +18,7 @@ def login():
         userid = makeUser(username)
     return jsonify(userid)
 
+@cross_origin()
 @app.route('/submit', methods = ['POST'])
 def submit():
     if request.method == 'POST':
