@@ -13,7 +13,7 @@ def generateID():
     print("hash value: %032x" % hash)
     return hash
 
-def makeUser(username):
+def makeUser(username, userdata = {}):
     file = "users_db.csv"
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
@@ -23,7 +23,7 @@ def makeUser(username):
         while(checkUser(userid)): # id already exists (what a chance!)
             userid = generateID() # generate a new one
                     
-        newEntry = [username, userid]
+        newEntry = [username, userid, json.dumps(userdata)]
         csvwriter.writerow(newEntry)
     return userid
 

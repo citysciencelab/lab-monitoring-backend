@@ -16,8 +16,10 @@ def login():
     try:
         userid = str(getUserId(username))
     except ValueError:
-        userid = makeUser(username)
-    return jsonify(userid)
+        userdata = dict(request.json)
+        del userdata["username"]
+        userid = str(makeUser(username, userdata))
+    return jsonify({"id":userid})
 
 @cross_origin()
 @app.route('/submit', methods = ['POST'])

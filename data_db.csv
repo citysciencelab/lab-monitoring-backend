@@ -5,3 +5,6 @@ db_entry,timestamp,userid,data
 4,2020-03-20 13:18:46.859032,01b07,'{"d1": "sfa", "d2": "SG", "d3": "syg", "d4": ""}'
 5,2020-03-20 14:54:18.238448,01b078,'{"d1": "", "d2": "", "d3": "", "d4": ""}'
 6,2020-03-20 15:02:05.993976,01b07,'{"plzHome": "22222", "gender": "", "mood": 3, "moodTag": "", "videoApp": null, "maxCallSize": 0, "avgCallSize": 0, "screenHours": 0, "peopleMetRealWorld": 0, "peopleMetOnline": 0}'
+7,2020-03-23 09:22:15.726659,01b07,'{"plzHome": "22222", "gender": "", "mood": 3, "moodTag": "", "videoApp": null, "maxCallSize": 0, "avgCallSize": 0, "screenHours": 0, "peopleMetRealWorld": 0, "peopleMetOnline": 0}'
+8,2020-03-23 10:11:34.175423,270424715846629345856762053292564525675,'{"username": "ente", "plzHome": "00000", "age": "0", "gender": "D", "mood": 3, "moodTag": "", "videoApp": null, "maxCallSize": 0, "avgCallSize": 0, "peopleMetRealWorld": 0, "peopleMetOnline": 0, "kmTravelled": 0, "outsideHours": 0, "familyHours": 0, "screenHours": 0}'
+9,2020-03-23 12:40:51.643412,97617965110739271985052084087022713816,'{"username": "ente4", "plzHome": "11111", "age": "1", "gender": "D", "mood": 3, "moodTag": "", "videoApp": null, "maxCallSize": 0, "avgCallSize": 0, "peopleMetRealWorld": 0, "peopleMetOnline": 0, "kmTravelled": 0, "outsideHours": 0, "familyHours": 0, "screenHours": 0}'
