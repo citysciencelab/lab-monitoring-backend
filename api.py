@@ -4,6 +4,7 @@ from database_connector import getUserId, appendData, makeUser, getFullDumpJSON,
 
 app = Flask(__name__)
 CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @cross_origin()
 @app.route('/login', methods = ['POST'])
