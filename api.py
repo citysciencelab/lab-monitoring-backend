@@ -56,15 +56,28 @@ def rawdata():
         day = request.args.get("day")
         day_start = request.args.get('day_start')
         day_end = request.args.get('day_end')
-    print("day",day)
-    print("day_start",day_start)
+
     if day:
         day = datetime.datetime.fromisoformat(day)
         return jsonify(analysis.getAllEntriesOfDay(day))
+
     elif day_start and day_end:
         day_start = datetime.datetime.fromisoformat(day_start)
         day_end = datetime.datetime.fromisoformat(day_end)
         return jsonify(analysis.getAllEntriesOfDayRange(day_start, day_end))
+
+@app.route('/chart_test')
+def chartTest():
+    import pygal
+    graph = pygal.Line()
+    graph.title = '% Change Coolness of programming languages over time.'
+    graph.x_labels = ['2011','2012','2013','2014','2015','2016']
+    graph.add('Python',  [15, 31, 89, 200, 356, 900])
+    graph.add('JavaScript',    [15, 45, 76, 80,  60,  35])
+    graph.add('C++',     [5,  51, 54, 102, 150, 201])
+    graph.add('All others combined!',  [5, 15, 21, 55, 92, 105])
+    graph_data = graph.render_data_uri()
+    return graph_data
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
