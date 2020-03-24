@@ -76,8 +76,8 @@ def chartTest():
     graph.add('JavaScript',    [15, 45, 76, 80,  60,  35])
     graph.add('C++',     [5,  51, 54, 102, 150, 201])
     graph.add('All others combined!',  [5, 15, 21, 55, 92, 105])
-    graph_data = graph.render_data_uri()
-    return render_template("test_chart.html", graph_data =  graph_data)
+    graph_data = graph.render_response()
+    return graph_data
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
