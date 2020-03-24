@@ -6,7 +6,6 @@ def isDayEqual(a, b):
     '''
     Takes two datetime objects and compares their date
     '''
-    print("provided values", (a),"and",(b) )
     if type(a) == datetime.datetime and type(b) == datetime.datetime:
         return a.date() == b.date()
     else:
@@ -16,7 +15,6 @@ def getAllEntriesOfDay(day):
     db_content = getFullDumpJSON() # read DB
 
     # filter for date
-    print(db_content[0]["timestamp"])
     entriesOfDay = [item for item in db_content if isDayEqual(datetime.datetime.fromisoformat(item["timestamp"]), day)]
 
     # only get latest entry per each user
@@ -43,7 +41,9 @@ def getAllEntriesOfDay(day):
 def getAllEntriesOfDayRange(day_start, day_end):
     day = day_start
     entriesOfRange = []
-    while day < day_end:
-        entriesOfRange.append(getAllEntriesOfDay(day))
+    while day <= day_end:
+        entriesOfDay = getAllEntriesOfDay(day)
+        if len(entriesOfDay) > 0:
+            entriesOfRange.append(entriesOfDay)
         day += datetime.timedelta(days=1)
     return entriesOfRange

@@ -38,6 +38,7 @@ def submit():
             abort(401)
         data = dict(request.json)
         del data["id"]
+        del data["username"]
         appendData(userid,data)
     return jsonify(getFullDumpJSON())
 
@@ -49,10 +50,21 @@ def index():
 def rawdata():
     if request.method == 'POST':
         day = request.json['day']
+        day_start = request.json['day_start']
+        day_end = request.json['day_end']
     if request.method == "GET":
         day = request.args.get("day")
-    day = datetime.datetime.fromisoformat(day)
-    return jsonify(analysis.getAllEntriesOfDay(day))
+        day_start = request.args.get('day_start')
+        day_end = request.args.get('day_end')
+    print("day",day)
+    print("day_start",day_start)
+    if day:
+        day = datetime.datetime.fromisoformat(day)
+        return jsonify(analysis.getAllEntriesOfDay(day))
+    elif day_start and day_end:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        return jsonify(analysis.getAllEntriesOfDayRange(day_start, day_end))
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
