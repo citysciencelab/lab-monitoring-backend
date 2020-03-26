@@ -1,7 +1,7 @@
 import datetime
 from flask import Flask, request, render_template, jsonify, abort
 from flask_cors import CORS, cross_origin
-from database_connector import getUserId, getUserData, appendData, makeUser, getFullDumpJSON, checkUser
+from database_connector import getUserId, getUserData, appendData, makeUser, getFullDumpJSON, checkUser, setUserData
 import analysis
 
 app = Flask(__name__)
@@ -13,18 +13,24 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def login():
     if request.method == 'POST':
         username = request.json['username']
+        print("post",dict(request.json))
     if username == "":
         abort(400)
     try:
         userid = str(getUserId(username))
     except ValueError:
-        userdata = dict(request.json)
-        del userdata["username"]
-        userid = str(makeUser(username, userdata))
+        userid = str(makeUser(username))
+    
+    new_userdata = dict(request.json)
+    if len(new_userdata) >= 1:
+        # we received some new userdata, store it in DB
+        setUserData(userid, new_userdata)
+
     response = {
-            "id":userid,
+            "id": userid,
             "userdata": getUserData(username)
-        }
+    }
+    
     return jsonify(response)
 
 @cross_origin()
