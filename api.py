@@ -22,7 +22,7 @@ def login():
         userid = str(makeUser(username))
     
     new_userdata = dict(request.json)
-    if len(new_userdata) >= 1:
+    if len(new_userdata) > 1:
         # we received some new userdata, store it in DB
         setUserData(userid, new_userdata)
 
