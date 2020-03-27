@@ -22,6 +22,15 @@ def parseReq(request):
     else:
         return {}
 
+def tryParseList(data):
+    if type(data) is list: # got valid JSON via POST
+        return data
+    elif type(data) is str: # got GET list or string
+        if data[0] == "[": # got list in string
+            data = data[1:-1] # trim brackets
+            return data.split(",") # return as list
+    return None # else: no list
+
 @cross_origin()
 @app.route('/login', methods = ['POST'])
 def login():
@@ -107,13 +116,20 @@ def aggr():
     day_end = params.get('day_end')
     key = params.get('key')
     aggregate = params.get('aggregate')
-
     if day_start and day_end and key and aggregate:
         day_start = datetime.datetime.fromisoformat(day_start)
         day_end = datetime.datetime.fromisoformat(day_end)
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
-            results = analysis.aggregateEntries(entries, key, aggregate)
+            keyList = tryParseList(key)
+            aggregateList = tryParseList(aggregate)
+            if keyList:
+                if aggregateList:
+                    results = analysis.aggregateMultiple(entries, keyList, aggregateList)
+                else:
+                    results = analysis.aggregateMultipleKeys(entries, keyList, aggregate)
+            else:
+                results = analysis.aggregateEntries(entries, key, aggregate)
             return jsonify(results)
         except ValueError:
             abort(400)

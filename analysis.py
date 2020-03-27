@@ -49,6 +49,12 @@ def getAllEntriesOfDayRange(day_start, day_end):
         day += datetime.timedelta(days=1)
     return entriesOfRange
 
+def aggregateMultipleKeys(entries, keylist, aggregate):
+    raise NotImplementedError
+
+def aggregateMultiple(entries, keylist, aggregatelist):
+    raise NotImplementedError
+
 def aggregateEntries(entries, key, aggregate_type):
     # entries have to be in day-bins (list of list)
     import json    
