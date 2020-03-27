@@ -8,27 +8,43 @@ app = Flask(__name__)
 CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+def parseReq(request):
+    if request.method == 'POST':
+        params = request.json
+    elif request.method == "GET":
+        params = request.args
+    else:
+        abort(400)
+    
+    if params and len(params.items()) > 0:
+        return dict(params)
+    else:
+        return {}
+
 @cross_origin()
 @app.route('/login', methods = ['POST'])
 def login():
-    if request.method == 'POST':
-        username = request.json['username']
-        print("post",dict(request.json))
+    params = parseReq(request)
+    username = params.get('username')
     if username == "":
         abort(400)
     try:
         userid = str(getUserId(username))
     except ValueError:
         userid = str(makeUser(username))
-    
-    new_userdata = dict(request.json)
-    if len(new_userdata) > 1:
+
+    if len(params) > 1:
         # we received some new userdata, store it in DB
-        setUserData(userid, new_userdata)
+        setUserData(userid, params)
+
+    try:
+        userdata = getUserData(username)
+    except:
+        abort(401)
 
     response = {
             "id": userid,
-            "userdata": getUserData(username)
+            "userdata": userdata
     }
     
     return jsonify(response)
@@ -36,16 +52,15 @@ def login():
 @cross_origin()
 @app.route('/submit', methods = ['POST'])
 def submit():
-    if request.method == 'POST':
-        if not "id" in request.json:
-            abort(401)
-        userid = request.json['id']
-        if not checkUser(userid):
-            abort(401)
-        data = dict(request.json)
-        del data["id"]
-        del data["username"]
-        appendData(userid,data)
+    params = parseReq(request)
+
+    userid = params.get('id')
+    if not checkUser(params['id']):
+        abort(401)
+    
+    del params["id"]
+    del params["username"] # anonymise :P
+    appendData(userid,params)
     return jsonify(getFullDumpJSON())
 
 @app.route('/')
@@ -54,14 +69,10 @@ def index():
 
 @app.route('/rawdata', methods = ['POST','GET'])
 def rawdata():
-    if request.method == 'POST':
-        day = request.json['day']
-        day_start = request.json['day_start']
-        day_end = request.json['day_end']
-    if request.method == "GET":
-        day = request.args.get("day")
-        day_start = request.args.get('day_start')
-        day_end = request.args.get('day_end')
+    params = parseReq(request)
+    day = params.get('day')
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
 
     if day:
         day = datetime.datetime.fromisoformat(day)
@@ -71,6 +82,8 @@ def rawdata():
         day_start = datetime.datetime.fromisoformat(day_start)
         day_end = datetime.datetime.fromisoformat(day_end)
         return jsonify(analysis.getAllEntriesOfDayRange(day_start, day_end))
+    else:
+        abort(400)
 
 @app.route('/chart_test')
 def chartTest():
@@ -87,16 +100,11 @@ def chartTest():
 
 @app.route('/aggregate')
 def aggr():
-    if request.method == 'POST':
-        day_start = request.json['day_start']
-        day_end = request.json['day_end']
-        key = request.json['key']
-        aggregate = request.json['aggregate']
-    if request.method == "GET":
-        day_start = request.args.get('day_start')
-        day_end = request.args.get('day_end')
-        key = request.args.get('key')
-        aggregate = request.args.get('aggregate')
+    params = parseReq(request)
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
+    key = params.get('key')
+    aggregate = params.get('aggregate')
 
     if day_start and day_end and key and aggregate:
         day_start = datetime.datetime.fromisoformat(day_start)
@@ -104,22 +112,18 @@ def aggr():
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
             results = analysis.aggregateEntries(entries, key, aggregate)
+            return jsonify(results)
         except ValueError:
             abort(400)
-        return jsonify(results)
     else:
         abort(400)
 
 @app.route('/num_submissions')
 def num_submissions():
-    if request.method == 'POST':
-        day = request.json['day']
-        day_start = request.json['day_start']
-        day_end = request.json['day_end']
-    if request.method == "GET":
-        day = request.args.get("day")
-        day_start = request.args.get('day_start')
-        day_end = request.args.get('day_end')
+    params = parseReq(request)
+    day = params.get('day')
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
 
     if day:
         day = datetime.datetime.fromisoformat(day)

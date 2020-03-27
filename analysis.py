@@ -28,6 +28,7 @@ def getAllEntriesOfDay(day):
 
             if newdate < olddate:
                 # present entry is more recent
+                # equal timestamps get overwritten by later occurence!
                 continue
             
         # else we found a more recent entry or new user
@@ -60,9 +61,7 @@ def aggregateEntries(entries, key, aggregate_type):
             average = 0
             count = 0
             for entry in day:
-                print("entry",type(entry),entry)
                 data = json.loads(entry["data"])
-                print("data",type(data),data)
                 if key in data and (type(data[key])==int or type(data[key])==float): # no NoneType no str, ...
                     average += data[key]
                     count += 1
