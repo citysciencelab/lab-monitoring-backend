@@ -1,4 +1,5 @@
 import datetime
+import pygal
 from flask import Flask, request, render_template, jsonify, abort
 from flask_cors import CORS, cross_origin
 from database_connector import getUserId, getUserData, appendData, makeUser, getFullDumpJSON, checkUser, setUserData
@@ -16,7 +17,7 @@ def parseReq(request):
     else:
         abort(400)
     
-    if params and len(params.items()) > 0:
+    if params and len(dict(params).items()) > 0:
         return dict(params)
     else:
         return {}
@@ -89,7 +90,6 @@ def rawdata():
 
 @app.route('/chart_test')
 def chartTest():
-    import pygal
     graph = pygal.Line()
     graph.title = '% Change Coolness of programming languages over time.'
     graph.x_labels = ['2011','2012','2013','2014','2015','2016']
@@ -117,6 +117,33 @@ def aggr():
             return jsonify(results)
         except ValueError:
             abort(400)
+    else:
+        abort(400)
+
+@app.route('/aggregate_plot')
+def aggr_plot():
+    params = parseReq(request)
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
+    key = params.get('key')
+    aggregate = params.get('aggregate')
+
+    if day_start and day_end and key and aggregate:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
+        try:
+            results = analysis.aggregateEntries(entries, key, aggregate)
+        except ValueError:
+            abort(400)
+
+        graph = pygal.Line()
+        # graph.title = '% Change Coolness of programming languages over time.'
+        graph.x_labels = [ x["timestamp"] for x in results ]
+        data = [ x["value"] for x in results ]
+        graph.add(results[0]["key"],  data)
+        graph_data = graph.render_response()
+        return graph_data
     else:
         abort(400)
 
