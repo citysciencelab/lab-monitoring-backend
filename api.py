@@ -85,5 +85,30 @@ def chartTest():
     graph_data = graph.render_response()
     return graph_data
 
+@app.route('/aggregate')
+def aggr():
+    if request.method == 'POST':
+        day_start = request.json['day_start']
+        day_end = request.json['day_end']
+        key = request.json['key']
+        aggregate = request.json['aggregate']
+    if request.method == "GET":
+        day_start = request.args.get('day_start')
+        day_end = request.args.get('day_end')
+        key = request.args.get('key')
+        aggregate = request.args.get('aggregate')
+
+    if day_start and day_end and key and aggregate:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
+        try:
+            results = analysis.aggregateEntries(entries, key, aggregate)
+        except ValueError:
+            abort(400)
+        return jsonify(results)
+    else:
+        abort(400)
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

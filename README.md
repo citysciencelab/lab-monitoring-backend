@@ -9,6 +9,31 @@ Requires
 
 ```pip install -r requirements.txt```
 
+#### nginx configuration
+
+in /etc/nginx/conf.d/your_conf_file.conf:
+```
+server {
+    listen 80 443; # http https
+    location = /monitorbackend { rewrite ^ /monitorbackend/; }
+    location /monitorbackend { try_files $uri @monitorbackend; }
+    location @monitorbackend {
+        include uwsgi_params;
+        uwsgi_pass unix:/tmp/monitorbackend.sock;
+    }
+}
+
+$ service nginx reload
+```
+
+
+### uwsgi serve
+
+```
+$ uwsgi -s /tmp/monitorbackend.sock --manage-script-name --mount /monitorbackend=api:app --plugin python3
+$ sudo chown www-data.www-data /tmp/monitorbackend.sock
+```
+
 ### Usage
 
 ```python api.py``` runs the flask backend-server on port 5000

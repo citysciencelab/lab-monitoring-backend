@@ -47,3 +47,36 @@ def getAllEntriesOfDayRange(day_start, day_end):
             entriesOfRange.append(entriesOfDay)
         day += datetime.timedelta(days=1)
     return entriesOfRange
+
+def aggregateEntries(entries, key, aggregate_type):
+    # entries have to be in day-bins (list of list)
+    import json    
+    if aggregate_type == "average":
+        # aggregate over days
+        timeline = [] # list of dict with {timestamp:, data:,...}
+
+        for day in entries:
+            # average all values of key
+            average = 0
+            count = 0
+            for entry in day:
+                print("entry",type(entry),entry)
+                data = json.loads(entry["data"])
+                print("data",type(data),data)
+                if key in data and (type(data[key])==int or type(data[key])==float): # no NoneType no str, ...
+                    average += data[key]
+                    count += 1
+            if count != 0:
+                average /= count
+
+            timeline.append({
+                "timestamp": datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat(),
+                "value": average,
+                "key" : key,
+                "aggregate" : aggregate_type
+            })
+        timeline.sort(key=lambda item:item["timestamp"]) # make sure the return list is sorted by timestamp
+        return timeline
+
+    else:
+        raise ValueError("aggregate type",aggregate_type,"is not defined!")
