@@ -88,7 +88,13 @@ def appendData(userid, data):
     with open(file, 'a', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='\'', quoting=csv.QUOTE_MINIMAL) # use ' as quotechar, since json string representation uses "
-        newEntry = [numLines, getTimeStamp(), userid, json.dumps(data) ]
+
+        timestamp = getTimeStamp()
+        if data.get("yesterday"): # someone forgot, huh?
+            # set to latest second of yesterday, so this will be the most recent entry of yesterday
+            timestamp -= datetime.timedelta(days=1)
+            timestamp = timestamp.replace(hour=23,minute=59,second=59,microsecond=999999)
+        newEntry = [numLines, timestamp, userid, json.dumps(data) ]
         csvwriter.writerow(newEntry)
 
 def getFullDumpStr():
