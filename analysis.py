@@ -70,7 +70,7 @@ def aggregateEntries(entries, key, aggregate_type):
                 average /= count
 
             timeline.append({
-                "timestamp": datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat(),
+                "timestamp": datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat(), # strip away the time from timestamp
                 "value": average,
                 "key" : key,
                 "aggregate" : aggregate_type

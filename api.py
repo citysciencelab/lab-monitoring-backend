@@ -110,5 +110,29 @@ def aggr():
     else:
         abort(400)
 
+@app.route('/num_submissions')
+def num_submissions():
+    if request.method == 'POST':
+        day = request.json['day']
+        day_start = request.json['day_start']
+        day_end = request.json['day_end']
+    if request.method == "GET":
+        day = request.args.get("day")
+        day_start = request.args.get('day_start')
+        day_end = request.args.get('day_end')
+
+    if day:
+        day = datetime.datetime.fromisoformat(day)
+        entries = analysis.getAllEntriesOfDay(day)
+    elif day_start and day_end:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
+    else:
+        abort(400)
+
+    num_entries = [ {"numberOfEntries":len(day), "date":datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat()} for day in entries]
+    return jsonify(num_entries)
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
