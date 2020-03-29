@@ -11,14 +11,20 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 def parseReq(request):
     if request.method == 'POST':
-        params = request.json
+        params = dict(request.json)
     elif request.method == "GET":
-        params = request.args
+        params = {}
+        for key in request.args.keys():
+            # we have to parse this element by element, to detect mduplicate keys
+            if len(request.args.getlist(key)) > 1:
+                params[key] = request.args.getlist(key) # duplicate key, store all values as list
+            else:
+                params[key] = request.args[key] # default behaviour: store single value
     else:
         abort(400)
     
-    if params and len(dict(params).items()) > 0:
-        return dict(params)
+    if params and len(params.items()) > 0:
+        return params
     else:
         return {}
 
@@ -30,6 +36,11 @@ def tryParseList(data):
             data = data[1:-1] # trim brackets
             return data.split(",") # return as list
     return None # else: no list
+
+@app.route('/test')
+def test():
+    params = parseReq(request)
+    return jsonify(params)
 
 @cross_origin()
 @app.route('/login', methods = ['POST'])
@@ -154,7 +165,7 @@ def aggr_plot():
             abort(400)
 
         graph = pygal.Line()
-        # graph.title = '% Change Coolness of programming languages over time.'
+        graph.title = aggregate + " of " + key + " over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
         data = [ x["value"] for x in results ]
         graph.add(results[0]["key"],  data)
