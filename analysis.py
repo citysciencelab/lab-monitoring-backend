@@ -88,14 +88,15 @@ def aggregateMultiple(entries, keylist, aggregatelist):
             elif aggregate_type == "max":
                 returnVal = None
                 entries = [json.loads(entry["data"]) for entry in day]
-                values = [float(entry[key]) for entry in entries if key in entry and not entry[key] is None]
+                values = [tryParse(float,entry[key]) for entry in entries if key in entry and not tryParse(float,entry[key]) is None]
+                values = [x for x in values if x is not None]
                 if len(values) > 0:
                     returnVal = max(values)
                 valueslist[key+"_"+aggregate_type] = returnVal
             elif aggregate_type == "min":
                 returnVal = None
                 entries = [json.loads(entry["data"]) for entry in day]
-                values = [float(entry[key]) for entry in entries if key in entry and not entry[key] is None]
+                values = [tryParse(float,entry[key]) for entry in entries if key in entry and not tryParse(float,entry[key]) is None]
                 if len(values) > 0:
                     returnVal = min(values)
                 valueslist[key+"_"+aggregate_type] = returnVal
@@ -109,3 +110,13 @@ def aggregateMultiple(entries, keylist, aggregatelist):
         })
     timeline.sort(key=lambda item:item["timestamp"]) # make sure the return list is sorted by timestamp
     return timeline
+
+def tryParse(typeq,value):
+    print("cal",value)
+    if value is None:
+        return None
+    try:
+        print(value)
+        return typeq(value)
+    except ValueError:
+        return None
