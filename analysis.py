@@ -85,6 +85,20 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                         if count_valid_entries != 0:
                             average /= count_valid_entries
                 valueslist[key+"_"+aggregate_type] = average
+            elif aggregate_type == "max":
+                returnVal = None
+                entries = [json.loads(entry["data"]) for entry in day]
+                values = [float(entry[key]) for entry in entries if key in entry and not entry[key] is None]
+                if len(values) > 0:
+                    returnVal = max(values)
+                valueslist[key+"_"+aggregate_type] = returnVal
+            elif aggregate_type == "min":
+                returnVal = None
+                entries = [json.loads(entry["data"]) for entry in day]
+                values = [float(entry[key]) for entry in entries if key in entry and not entry[key] is None]
+                if len(values) > 0:
+                    returnVal = min(values)
+                valueslist[key+"_"+aggregate_type] = returnVal
             else:
                 valueslist[key+"_"+aggregate_type] = None
                 raise ValueError("aggregate type",aggregate_type,"is not defined!")
