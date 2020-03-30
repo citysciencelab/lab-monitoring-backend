@@ -49,39 +49,48 @@ def getAllEntriesOfDayRange(day_start, day_end):
         day += datetime.timedelta(days=1)
     return entriesOfRange
 
-def aggregateMultipleKeys(entries, keylist, aggregate):
-    raise NotImplementedError
-
 def aggregateMultiple(entries, keylist, aggregatelist):
-    raise NotImplementedError
+    # entries have to be in day-bins (list of list)
+    import json
+    # aggregate over days
+    timeline = [] # list of dict with {timestamp:, data:,...}    
+    for day in entries:
+        valueslist = {}
+        if len(aggregatelist) == 1:
+            # only one aggregate given for all keys
+            aggregatelist = [aggregatelist[0]]*len(keylist)
+        elif len(aggregatelist) != len (keylist):
+            raise ValueError("number of keys and aggregates does not match! #keys:",len(keylist),"#aggregates:",len(aggregatelist))
+
+        for key, aggregate_type in zip(keylist,aggregatelist):
+            if key+"_"+aggregate_type in valueslist:
+                raise ValueError("duplicate key-aggregate pair! key:",key,"aggregate:",aggregate_type)
+            if aggregate_type == "average":
+                # average all values of day and key
+                average = 0
+                count_valid_entries = 0
+                for entry in day:
+                    data = json.loads(entry["data"])
+                    if key in data and (type(data[key])==int or type(data[key])==float): # no NoneType no str, ...
+                        average += data[key]
+                        count_valid_entries += 1
+                        if count_valid_entries != 0:
+                            average /= count_valid_entries
+                            print("avg",average)
+                valueslist[key+"_"+aggregate_type] = average
+            else:
+                valueslist[key+"_"+aggregate_type] = None
+                raise ValueError("aggregate type",aggregate_type,"is not defined!")
+    
+        timeline.append({
+            "timestamp": datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat(), # strip away the time from timestamp
+            "values": valueslist
+        })
+    timeline.sort(key=lambda item:item["timestamp"]) # make sure the return list is sorted by timestamp
+    return timeline
+
+def aggregateMultipleKeys(entries, keylist, aggregate):
+    return aggregateMultiple(entries,keylist,[aggregate])
 
 def aggregateEntries(entries, key, aggregate_type):
-    # entries have to be in day-bins (list of list)
-    import json    
-    if aggregate_type == "average":
-        # aggregate over days
-        timeline = [] # list of dict with {timestamp:, data:,...}
-
-        for day in entries:
-            # average all values of key
-            average = 0
-            count = 0
-            for entry in day:
-                data = json.loads(entry["data"])
-                if key in data and (type(data[key])==int or type(data[key])==float): # no NoneType no str, ...
-                    average += data[key]
-                    count += 1
-            if count != 0:
-                average /= count
-
-            timeline.append({
-                "timestamp": datetime.datetime.fromisoformat(day[0]["timestamp"]).date().isoformat(), # strip away the time from timestamp
-                "value": average,
-                "key" : key,
-                "aggregate" : aggregate_type
-            })
-        timeline.sort(key=lambda item:item["timestamp"]) # make sure the return list is sorted by timestamp
-        return timeline
-
-    else:
-        raise ValueError("aggregate type",aggregate_type,"is not defined!")
+    return aggregateMultiple(entries,[key],[aggregate_type])

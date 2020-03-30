@@ -142,7 +142,8 @@ def aggr():
             else:
                 results = analysis.aggregateEntries(entries, key, aggregate)
             return jsonify(results)
-        except ValueError:
+        except ValueError as e:
+            print(e)
             abort(400)
     else:
         abort(400)
@@ -160,15 +161,31 @@ def aggr_plot():
         day_end = datetime.datetime.fromisoformat(day_end)
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
-            results = analysis.aggregateEntries(entries, key, aggregate)
+            keyList = tryParseList(key)
+            aggregateList = tryParseList(aggregate)
+            if keyList:
+                if aggregateList:
+                    results = analysis.aggregateMultiple(entries, keyList, aggregateList)
+                else:
+                    results = analysis.aggregateMultipleKeys(entries, keyList, aggregate)
+            else:
+                results = analysis.aggregateEntries(entries, key, aggregate)
         except ValueError:
             abort(400)
 
         graph = pygal.Line()
-        graph.title = aggregate + " of " + key + " over time."
+        graph.title = str(aggregate) + " of " + str(key) + " over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
-        data = [ x["value"] for x in results ]
-        graph.add(results[0]["key"],  data)
+        if not keyList:
+            keyList = [key]
+        if not aggregateList:
+            aggregateList = [aggregate]
+        for k, a in zip(keyList,aggregateList):
+            data = [ x["values"][k+"_"+a] for x in results ]
+            graph.add(k+" "+a,  data)
+        # else:
+        #     data = [ x["values"][key+"_"+aggregate] for x in results ]
+        #     graph.add(key,  data)
         graph_data = graph.render_response()
         return graph_data
     else:
