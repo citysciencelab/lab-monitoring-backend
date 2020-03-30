@@ -75,8 +75,12 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                 count_valid_entries = 0
                 for entry in day:
                     data = json.loads(entry["data"])
-                    if key in data and (type(data[key])==int or type(data[key])==float): # no NoneType no str, ...
-                        average += data[key]
+                    if key in data:
+                        try:
+                            number = float(data[key]) # no NoneType no str, ...
+                        except (ValueError, TypeError):
+                            continue
+                        average += number
                         count_valid_entries += 1
                         if count_valid_entries != 0:
                             average /= count_valid_entries
