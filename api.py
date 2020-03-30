@@ -29,7 +29,8 @@ def parseReq(request):
         return {}
 
 def tryParseList(data):
-    if type(data) is list: # got valid JSON via POST
+    # this parses lists given as strin [x,y,z] into real lists or returns None, if it wasn't a list
+    if type(data) is list: # already got valid list (probably JSON via POST)
         return data
     elif type(data) is str: # got GET list or string
         if data[0] == "[": # got list in string
@@ -132,15 +133,7 @@ def aggr():
         day_end = datetime.datetime.fromisoformat(day_end)
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
-            keyList = tryParseList(key)
-            aggregateList = tryParseList(aggregate)
-            if keyList:
-                if aggregateList:
-                    results = analysis.aggregateMultiple(entries, keyList, aggregateList)
-                else:
-                    results = analysis.aggregateMultipleKeys(entries, keyList, aggregate)
-            else:
-                results = analysis.aggregateEntries(entries, key, aggregate)
+            results = analysis.aggregateMultiple(entries, key, aggregate)
             return jsonify(results)
         except ValueError as e:
             print(e)
@@ -161,31 +154,24 @@ def aggr_plot():
         day_end = datetime.datetime.fromisoformat(day_end)
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
-            keyList = tryParseList(key)
-            aggregateList = tryParseList(aggregate)
-            if keyList:
-                if aggregateList:
-                    results = analysis.aggregateMultiple(entries, keyList, aggregateList)
-                else:
-                    results = analysis.aggregateMultipleKeys(entries, keyList, aggregate)
-            else:
-                results = analysis.aggregateEntries(entries, key, aggregate)
-        except ValueError:
+            results = analysis.aggregateMultiple(entries, key, aggregate)
+        except ValueError as e:
+            print(e)
             abort(400)
 
         graph = pygal.Line()
         graph.title = str(aggregate) + " of " + str(key) + " over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
-        if not keyList:
-            keyList = [key]
-        if not aggregateList:
-            aggregateList = [aggregate]
-        for k, a in zip(keyList,aggregateList):
+        
+        if not type(key) is list:
+            key = [key]
+        if not type(aggregate) is list:
+            aggregate = [aggregate]
+
+        for k, a in zip(key,aggregate):
             data = [ x["values"][k+"_"+a] for x in results ]
             graph.add(k+" "+a,  data)
-        # else:
-        #     data = [ x["values"][key+"_"+aggregate] for x in results ]
-        #     graph.add(key,  data)
+
         graph_data = graph.render_response()
         return graph_data
     else:

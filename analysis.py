@@ -1,5 +1,5 @@
 import datetime
-
+import json
 from database_connector import getFullDumpJSON
 
 def isDayEqual(a, b):
@@ -51,7 +51,11 @@ def getAllEntriesOfDayRange(day_start, day_end):
 
 def aggregateMultiple(entries, keylist, aggregatelist):
     # entries have to be in day-bins (list of list)
-    import json
+    if not type(keylist) is list:
+        keylist = [keylist]
+    if not type(aggregatelist) is list:
+        aggregatelist = [aggregatelist]
+
     # aggregate over days
     timeline = [] # list of dict with {timestamp:, data:,...}    
     for day in entries:
@@ -76,7 +80,6 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                         count_valid_entries += 1
                         if count_valid_entries != 0:
                             average /= count_valid_entries
-                            print("avg",average)
                 valueslist[key+"_"+aggregate_type] = average
             else:
                 valueslist[key+"_"+aggregate_type] = None
@@ -88,9 +91,3 @@ def aggregateMultiple(entries, keylist, aggregatelist):
         })
     timeline.sort(key=lambda item:item["timestamp"]) # make sure the return list is sorted by timestamp
     return timeline
-
-def aggregateMultipleKeys(entries, keylist, aggregate):
-    return aggregateMultiple(entries,keylist,[aggregate])
-
-def aggregateEntries(entries, key, aggregate_type):
-    return aggregateMultiple(entries,[key],[aggregate_type])
