@@ -166,7 +166,7 @@ def aggr_plot():
         if not type(key) is list:
             key = [key]
         if not type(aggregate) is list:
-            aggregate = [aggregate]
+            aggregate = [aggregate]*len(key)
 
         for k, a in zip(key,aggregate):
             data = [ x["values"][k+"_"+a] for x in results ]
