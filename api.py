@@ -128,9 +128,15 @@ def aggr():
     day_end = params.get('day_end')
     key = params.get('key')
     aggregate = params.get('aggregate')
-    if day_start and day_end and key and aggregate:
-        day_start = datetime.datetime.fromisoformat(day_start)
-        day_end = datetime.datetime.fromisoformat(day_end)
+    if key and aggregate:
+        if day_start:
+            day_start = datetime.datetime.fromisoformat(day_start)
+        else:
+            day_start = datetime.datetime(2020,3,1)
+        if day_end:
+            day_end = datetime.datetime.fromisoformat(day_end)
+        else:
+            day_end = datetime.datetime.today()
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
             results = analysis.aggregateMultiple(entries, key, aggregate)
@@ -149,9 +155,15 @@ def aggr_plot():
     key = params.get('key')
     aggregate = params.get('aggregate')
 
-    if day_start and day_end and key and aggregate:
-        day_start = datetime.datetime.fromisoformat(day_start)
-        day_end = datetime.datetime.fromisoformat(day_end)
+    if key and aggregate:
+        if day_start:
+            day_start = datetime.datetime.fromisoformat(day_start)
+        else:
+            day_start = datetime.datetime(2020,3,1)
+        if day_end:
+            day_end = datetime.datetime.fromisoformat(day_end)
+        else:
+            day_end = datetime.datetime.today()
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end)
         try:
             results = analysis.aggregateMultiple(entries, key, aggregate)
@@ -184,9 +196,15 @@ def user_timeline():
     day_start = params.get('day_start')
     day_end = params.get('day_end')
     key = params.get('key')
-    if user_id and day_start and day_end and key:
-        day_start = datetime.datetime.fromisoformat(day_start)
-        day_end = datetime.datetime.fromisoformat(day_end)
+    if user_id and key:
+        if day_start:
+            day_start = datetime.datetime.fromisoformat(day_start)
+        else:
+            day_start = datetime.datetime(2020,3,1)
+        if day_end:
+            day_end = datetime.datetime.fromisoformat(day_end)
+        else:
+            day_end = datetime.datetime.today()
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end, user_id)
         try:
             results = analysis.aggregateMultiple(entries, key, "all")
@@ -204,9 +222,15 @@ def user_plot():
     day_start = params.get('day_start')
     day_end = params.get('day_end')
     key = params.get('key')
-    if user_id and day_start and day_end and key:
-        day_start = datetime.datetime.fromisoformat(day_start)
-        day_end = datetime.datetime.fromisoformat(day_end)
+    if user_id and key:
+        if day_start:
+            day_start = datetime.datetime.fromisoformat(day_start)
+        else:
+            day_start = datetime.datetime(2020,3,1)
+        if day_end:
+            day_end = datetime.datetime.fromisoformat(day_end)
+        else:
+            day_end = datetime.datetime.today()
         entries = analysis.getAllEntriesOfDayRange(day_start, day_end, user_id)
         try:
             results = analysis.aggregateMultiple(entries, key, "all")
@@ -223,7 +247,7 @@ def user_plot():
         aggregate = ["all"]*len(key)
 
         for k, a in zip(key,aggregate):
-            data = [ x["values"][k+"_"+a][0] for x in results ]
+            data = [ x["values"][k+"_"+a][0] for x in results if len(x["values"][k+"_"+a]) > 0]
             graph.add(k+" "+a,  data)
 
         graph_data = graph.render_response()
