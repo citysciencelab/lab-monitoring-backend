@@ -173,18 +173,31 @@ def aggr_plot():
 
         results = analysis.padMissingDays(results)
 
-        graph = pygal.Line()
-        graph.title = str(aggregate) + " of " + str(key) + " over time."
-        graph.x_labels = [ x["timestamp"] for x in results ]
-        
-        if not type(key) is list:
-            key = [key]
-        if not type(aggregate) is list:
-            aggregate = [aggregate]*len(key)
+        if aggregate == "all" and not type(key) is list:
+            # make a box plot
+            graph = pygal.Box(x_label_rotation=35, truncate_label=-1)
+            graph.title = "distribution of " + str(key) + " over time."
+            graph.x_labels = [ x["timestamp"] for x in results ]
+            for day in results:
+                # if not day["values"][key+"_"+aggregate][0]:
+                #     graph.add(day["timestamp"],None, allow_interruptions=True)
+                # else:
+                graph.add(day["timestamp"], day["values"][key+"_"+aggregate], allow_interruptions=True)
+        elif aggregate=="all" or "all" in aggregate :
+            abort(400)
+        else:
+            graph = pygal.Line(x_label_rotation=35, truncate_label=-1)
+            graph.title = str(aggregate) + " of " + str(key) + " over time."
+            graph.x_labels = [ x["timestamp"] for x in results ]
+            
+            if not type(key) is list:
+                key = [key]
+            if not type(aggregate) is list:
+                aggregate = [aggregate]*len(key)
 
-        for k, a in zip(key,aggregate):
-            data = [ x["values"][k+"_"+a] for x in results ]
-            graph.add(k+" "+a,  data, allow_interruptions=True)
+            for k, a in zip(key,aggregate):
+                data = [ x["values"][k+"_"+a] for x in results ]
+                graph.add(k+" "+a,  data, allow_interruptions=True)
 
         graph_data = graph.render_response()
         return graph_data
@@ -242,7 +255,7 @@ def user_plot():
 
         results = analysis.padMissingDays(results)
 
-        graph = pygal.Line()
+        graph = pygal.Line(x_label_rotation=35, truncate_label=-1)
         graph.title = str(key) + " of yourself over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
         
