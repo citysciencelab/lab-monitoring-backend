@@ -171,6 +171,8 @@ def aggr_plot():
             print(e)
             abort(400)
 
+        results = analysis.padMissingDays(results)
+
         graph = pygal.Line()
         graph.title = str(aggregate) + " of " + str(key) + " over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
@@ -182,7 +184,7 @@ def aggr_plot():
 
         for k, a in zip(key,aggregate):
             data = [ x["values"][k+"_"+a] for x in results ]
-            graph.add(k+" "+a,  data)
+            graph.add(k+" "+a,  data, allow_interruptions=True)
 
         graph_data = graph.render_response()
         return graph_data
@@ -238,6 +240,8 @@ def user_plot():
             print(e)
             abort(400)
 
+        results = analysis.padMissingDays(results)
+
         graph = pygal.Line()
         graph.title = str(key) + " of yourself over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
@@ -248,7 +252,7 @@ def user_plot():
 
         for k, a in zip(key,aggregate):
             data = [ x["values"][k+"_"+a][0] for x in results if len(x["values"][k+"_"+a]) > 0]
-            graph.add(k+" "+a,  data)
+            graph.add(k+" "+a,  data, allow_interruptions=True)
 
         graph_data = graph.render_response()
         return graph_data

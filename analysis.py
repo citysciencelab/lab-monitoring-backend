@@ -105,7 +105,7 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                 valueslist[key+"_"+aggregate_type] = returnVal
             elif aggregate_type == "all":
                 entries = [json.loads(entry["data"]) for entry in day]
-                values = [tryParse(float,entry[key]) for entry in entries if key in entry and not tryParse(float,entry[key]) is None]
+                values = [tryParse(float,entry[key]) for entry in entries if key in entry]
                 valueslist[key+"_"+aggregate_type] = values
             else:
                 valueslist[key+"_"+aggregate_type] = None
@@ -127,3 +127,30 @@ def tryParse(typeq,value):
         return typeq(value)
     except ValueError:
         return None
+
+def padMissingDays(entries):
+    if len(entries) < 2:
+        return entries
+
+    empty_values = {}
+    for k in entries[0]["values"].keys():
+        if type(entries[0]["values"][k]) is list:
+            empty_values[k] = [None]
+        else:
+            empty_values[k] = None
+    day =  datetime.datetime.fromisoformat(entries[0]["timestamp"])
+    padded_entries = []
+    counter = 0
+    while day <= datetime.datetime.fromisoformat(entries[-1]["timestamp"]):
+        if datetime.datetime.fromisoformat(entries[counter]["timestamp"]).date() == day.date():
+            padded_entries.append(entries[counter]) # copy present data
+            counter += 1
+        else:
+            # put in some padding
+            padded_entries.append( { 
+                "timestamp" : day.date().isoformat(), 
+                "values" : empty_values 
+            } )
+        day += datetime.timedelta(days=1)
+
+    return padded_entries
