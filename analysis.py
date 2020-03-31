@@ -11,7 +11,7 @@ def isDayEqual(a, b):
     else:
         raise ValueError("provide a valid datetime object! You provided", type(a),"and",type(b) )
 
-def getAllEntriesOfDay(day):
+def getAllEntriesOfDay(day, userid = None):
     db_content = getFullDumpJSON() # read DB
 
     # filter for date
@@ -21,6 +21,9 @@ def getAllEntriesOfDay(day):
     users_present = {}
     for item in entriesOfDay:
         user = item["userid"]
+        if userid and user != userid:
+            continue # when we are looking for a specific user, skip all others
+
         if user in users_present:
             # duplicate entry of user
             olddate = datetime.datetime.fromisoformat(users_present[user]["timestamp"])
@@ -39,11 +42,11 @@ def getAllEntriesOfDay(day):
 
     return entriesOfDay
 
-def getAllEntriesOfDayRange(day_start, day_end):
+def getAllEntriesOfDayRange(day_start, day_end, userid = None):
     day = day_start
     entriesOfRange = []
     while day <= day_end:
-        entriesOfDay = getAllEntriesOfDay(day)
+        entriesOfDay = getAllEntriesOfDay(day, userid)
         if len(entriesOfDay) > 0:
             entriesOfRange.append(entriesOfDay)
         day += datetime.timedelta(days=1)
@@ -100,6 +103,10 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                 if len(values) > 0:
                     returnVal = min(values)
                 valueslist[key+"_"+aggregate_type] = returnVal
+            elif aggregate_type == "all":
+                entries = [json.loads(entry["data"]) for entry in day]
+                values = [tryParse(float,entry[key]) for entry in entries if key in entry and not tryParse(float,entry[key]) is None]
+                valueslist[key+"_"+aggregate_type] = values
             else:
                 valueslist[key+"_"+aggregate_type] = None
                 raise ValueError("aggregate type",aggregate_type,"is not defined!")

@@ -177,6 +177,60 @@ def aggr_plot():
     else:
         abort(400)
 
+@app.route('/user_timeline')
+def user_timeline():
+    params = parseReq(request)
+    user_id = params.get("id")
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
+    key = params.get('key')
+    if user_id and day_start and day_end and key:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        entries = analysis.getAllEntriesOfDayRange(day_start, day_end, user_id)
+        try:
+            results = analysis.aggregateMultiple(entries, key, "all")
+            return jsonify(results)
+        except ValueError as e:
+            print(e)
+            abort(400)
+    else:
+        abort(400)
+
+@app.route('/user_plot')
+def user_plot():
+    params = parseReq(request)
+    user_id = params.get("id")
+    day_start = params.get('day_start')
+    day_end = params.get('day_end')
+    key = params.get('key')
+    if user_id and day_start and day_end and key:
+        day_start = datetime.datetime.fromisoformat(day_start)
+        day_end = datetime.datetime.fromisoformat(day_end)
+        entries = analysis.getAllEntriesOfDayRange(day_start, day_end, user_id)
+        try:
+            results = analysis.aggregateMultiple(entries, key, "all")
+        except ValueError as e:
+            print(e)
+            abort(400)
+
+        graph = pygal.Line()
+        graph.title = str(key) + " of yourself over time."
+        graph.x_labels = [ x["timestamp"] for x in results ]
+        
+        if not type(key) is list:
+            key = [key]
+        aggregate = ["all"]*len(key)
+
+        for k, a in zip(key,aggregate):
+            data = [ x["values"][k+"_"+a][0] for x in results ]
+            graph.add(k+" "+a,  data)
+
+        graph_data = graph.render_response()
+        return graph_data
+    else:
+        abort(400)
+
 @app.route('/num_submissions')
 def num_submissions():
     params = parseReq(request)
