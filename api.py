@@ -38,6 +38,18 @@ def tryParseList(data):
             return data.split(",") # return as list
     return None # else: no list
 
+def listToVerboseStr(wordList):
+    if type(wordList) is str:
+        return wordList
+    if len(wordList) == 0:
+        raise ValueError
+    result = str(wordList[0])
+    for item in wordList[1:-1]:
+        result += ", " + str(item)
+    if len(wordList) >= 2:
+        result += " and " + str(wordList[-1])
+    return result
+
 @app.route('/test')
 def test():
     params = parseReq(request)
@@ -85,7 +97,7 @@ def submit():
     del params["id"]
     del params["username"] # anonymise :P
     appendData(userid,params)
-    return jsonify(getFullDumpJSON())
+    return "200 - successful submit"
 
 @app.route('/')
 def index():
@@ -176,7 +188,7 @@ def aggr_plot():
         if aggregate == "all" and not type(key) is list:
             # make a box plot
             graph = pygal.Box(x_label_rotation=35, truncate_label=-1)
-            graph.title = "distribution of " + str(key) + " over time."
+            graph.title = "distribution of " + listToVerboseStr(key) + " over time."
             graph.x_labels = [ x["timestamp"] for x in results ]
             for day in results:
                 # if not day["values"][key+"_"+aggregate][0]:
@@ -187,7 +199,7 @@ def aggr_plot():
             abort(400)
         else:
             graph = pygal.Line(x_label_rotation=35, truncate_label=-1)
-            graph.title = str(aggregate) + " of " + str(key) + " over time."
+            graph.title = listToVerboseStr(aggregate) + " of " + listToVerboseStr(key) + " over time."
             graph.x_labels = [ x["timestamp"] for x in results ]
             
             if not type(key) is list:
@@ -256,7 +268,7 @@ def user_plot():
         results = analysis.padMissingDays(results)
 
         graph = pygal.Line(x_label_rotation=35, truncate_label=-1)
-        graph.title = str(key) + " of yourself over time."
+        graph.title = listToVerboseStr(key) + " of yourself over time."
         graph.x_labels = [ x["timestamp"] for x in results ]
         
         if not type(key) is list:
