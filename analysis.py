@@ -85,8 +85,8 @@ def aggregateMultiple(entries, keylist, aggregatelist):
                             continue
                         average += number
                         count_valid_entries += 1
-                        if count_valid_entries != 0:
-                            average /= count_valid_entries
+                if count_valid_entries != 0:
+                    average /= count_valid_entries
                 valueslist[key+"_"+aggregate_type] = average
             elif aggregate_type == "max":
                 returnVal = None

@@ -65,6 +65,6 @@ POST your data in field ```data``` to ```/submit```
 * average
 * max
 * min
-* all [not implemented for plotting yet]
+* all
 
 ### Configuration
