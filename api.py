@@ -59,8 +59,6 @@ def test():
 @app.route('/login', methods = ['POST'])
 def login():
     params = parseReq(request)
-    print("req",request.json)
-    print("par",params)
     username = params.get('username')
     if username == "":
         abort(400)

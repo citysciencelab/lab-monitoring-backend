@@ -19,7 +19,7 @@ def getUserData(username):
 
 def generateID():
     hash = random.getrandbits(128)
-    print("hash value: %032x" % hash)
+    # print("hash value: %032x" % hash)
     return hash
 
 def setUserData(userid, userdata):

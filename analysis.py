@@ -119,11 +119,9 @@ def aggregateMultiple(entries, keylist, aggregatelist):
     return timeline
 
 def tryParse(typeq,value):
-    print("cal",value)
     if value is None:
         return None
     try:
-        print(value)
         return typeq(value)
     except ValueError:
         return None
